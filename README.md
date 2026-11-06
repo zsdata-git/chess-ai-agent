@@ -2,112 +2,131 @@
 
 ## Présentation
 
-Chess AI Agent est un Proof of Concept (POC) d'agent IA conversationnel destiné à accompagner l'apprentissage des ouvertures aux échecs.
+Chess AI Agent est un Proof of Concept (POC) d'agent IA destiné à accompagner l'apprentissage des ouvertures aux échecs.
 
 Ce projet est réalisé dans le cadre de la formation IA Engineer d'OpenClassrooms, à partir d'un scénario professionnel pour la Fédération Française des Échecs (FFE).
 
 ## Objectifs
 
-L'application devra permettre de :
+L'application vise à :
 
-- Analyser une position d'échecs au format FEN.
-- Identifier les coups théoriques grâce à l'API Lichess.
-- Évaluer les positions avec Stockfish.
-- Fournir des explications grâce à un système RAG utilisant Milvus.
-- Recommander des vidéos explicatives via l'API YouTube.
-- Interagir avec un échiquier Angular.
-- Orchestrer les différents outils avec LangGraph.
+* Analyser une position d'échecs au format FEN.
+* Identifier les coups théoriques grâce à l'API Lichess.
+* Évaluer les positions avec Stockfish.
+* Fournir des explications grâce à un système RAG utilisant Milvus.
+* Recommander des vidéos explicatives via l'API YouTube.
+* Proposer une interface interactive avec Angular.
+* Orchestrer les différents composants avec LangGraph.
 
-## Architecture cible
+## Technologies
 
-| Technologie | Rôle |
-|---|---|
-| Python | Développement backend |
-| FastAPI | API REST |
-| LangGraph | Orchestration de l'agent IA |
-| Mistral | Modèle de langage envisagé |
-| Lichess API | Recherche de coups théoriques |
-| Stockfish | Analyse échiquéenne |
-| Milvus | Recherche vectorielle |
-| MongoDB | Stockage applicatif envisagé |
-| Angular | Interface utilisateur |
-| Docker Compose | Orchestration des services |
+| Technologie    | Rôle                           |
+| -------------- | ------------------------------ |
+| Python         | Développement backend          |
+| FastAPI        | API REST                       |
+| LangGraph      | Orchestration de l'agent       |
+| python-chess   | Validation des positions FEN   |
+| Lichess API    | Recherche de coups théoriques  |
+| Stockfish      | Évaluation des positions       |
+| pytest         | Tests automatisés              |
+| Milvus         | Recherche vectorielle (prévue) |
+| MongoDB        | Stockage applicatif (prévu)    |
+| Angular        | Interface utilisateur (prévue) |
+| Docker Compose | Conteneurisation               |
 
 ## État d'avancement
 
-### Étape 1 — Environnement de développement
+### Étape 1 — Environnement de développement ✅
 
-- [x] Initialisation du dépôt Git
-- [x] Initialisation du projet Python avec uv
-- [x] Création de la structure du projet
-- [x] Développement d'un backend FastAPI minimal
-- [x] Création de l'endpoint `/api/v1/healthcheck`
-- [x] Test automatisé avec pytest
-- [x] Conteneurisation du backend
-- [x] Exécution avec Docker Compose
+* Initialisation du projet avec uv et Git.
+* Structuration du backend FastAPI.
+* Création de l'endpoint `/api/v1/healthcheck`.
+* Mise en place de pytest.
+* Conteneurisation du backend avec Docker.
 
-### Étapes suivantes
+### Étape 2 — Agent LangGraph ✅
 
-- [ ] Développement de l'agent LangGraph
-- [ ] Intégration Lichess et Stockfish
-- [ ] Intégration du RAG avec Milvus
-- [ ] Intégration de l'API YouTube
-- [ ] Développement de l'interface Angular
-- [ ] Conteneurisation complète
-- [ ] Étude de faisabilité MCP
+* Validation des positions FEN avec python-chess.
+* Intégration de l'API Lichess pour récupérer les coups théoriques.
+* Intégration de Stockfish pour évaluer les positions.
+* Création des endpoints :
 
-## Installation
+  * `GET /api/v1/moves/{fen}`
+  * `GET /api/v1/evaluate/{fen}`
+* Développement d'un agent LangGraph :
+
+  * Recherche des coups théoriques sur Lichess.
+  * Utilisation de Stockfish lorsqu'aucun coup n'est trouvé.
+* Création de l'endpoint `POST /api/v1/agent/analyze`.
+* Gestion des erreurs et validation des entrées.
+* Tests unitaires et tests API avec pytest.
+
+Le routage automatique vers Stockfish a été vérifié avec des services simulés.
+
+### Prochaines étapes
+
+* [ ] Étape 3 — Intégration du RAG avec Milvus.
+* [ ] Étape 4 — Intégration de l'API YouTube.
+* [ ] Étape 5 — Développement de l'interface Angular.
+* [ ] Étape 6 — Packaging de l'application.
+* [ ] Étape 7 — Étude de faisabilité du système d'analyse vidéo.
+
+## Installation et exécution
 
 ### Prérequis
 
-- Git
-- Docker Desktop avec Docker Compose
+* Python
+* uv
+* Git
+* Docker Desktop
 
-### Démarrage
+### Installation
 
 Depuis la racine du projet :
+
+```bash
+uv sync
+```
+
+### Démarrage du backend
+
+```bash
+uv run uvicorn backend.app.main:app --reload
+```
+
+Documentation Swagger :
+
+`http://localhost:8000/docs`
+
+### Exécution avec Docker Compose
 
 ```bash
 docker compose up --build -d
 ```
 
-### Vérification
-
-Accéder à :
-
-- API : http://localhost:8000/api/v1/healthcheck
-- Swagger : http://localhost:8000/docs
-
-Réponse attendue :
-
-```json
-{
-  "status": "ok"
-}
-```
-
-### Arrêt
+Arrêt :
 
 ```bash
 docker compose down
 ```
 
-Cette commande arrête et supprime les conteneurs du projet, sans supprimer les volumes persistants.
-
 ## Tests
 
-Pour exécuter les tests localement :
+Exécuter les tests automatisés :
 
 ```bash
-uv sync
 uv run python -m pytest backend/tests -v
 ```
 
-Résultat actuellement vérifié :
+**Dernier résultat vérifié : 30 tests réussis.**
 
-```text
-1 passed
-```
+Les tests couvrent notamment :
+
+* La validation des positions FEN.
+* Les services Lichess et Stockfish.
+* Les endpoints FastAPI.
+* Le routage de l'agent LangGraph.
+* Les cas d'erreur.
 
 ## Structure du projet
 
@@ -115,8 +134,9 @@ Résultat actuellement vérifié :
 chess-ai-agent/
 ├── backend/
 │   ├── app/
-│   │   ├── api/
 │   │   ├── agents/
+│   │   │   └── chess_graph.py
+│   │   ├── api/
 │   │   ├── services/
 │   │   ├── rag/
 │   │   ├── models/
@@ -125,25 +145,18 @@ chess-ai-agent/
 │   ├── scripts/
 │   ├── tests/
 │   └── Dockerfile
-├── frontend/
 ├── data/
 ├── docs/
+├── engines/
+│   └── stockfish/
 ├── docker-compose.yml
 ├── pyproject.toml
 ├── uv.lock
 └── README.md
 ```
 
-## Documentation
-
-La documentation sera enrichie progressivement avec :
-
-- L'architecture LangGraph.
-- Les choix techniques.
-- Les tests et validations.
-- Les instructions de démonstration.
-- L'étude de faisabilité MCP.
-
 ## Statut
 
-🚧 Projet en cours de développement.
+✅ Étapes 1 et 2 terminées.
+
+🚧 Étape 3 — Intégration du RAG avec Milvus : à venir.
