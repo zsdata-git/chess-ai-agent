@@ -7,6 +7,7 @@ from backend.app.api.stockfish import router as stockfish_router
 
 from backend.app.api.agent import router as agent_router
 
+from backend.app.api.vector_search import router as vector_search_router
 
 app = FastAPI(
     title="Chess AI Agent",
@@ -41,3 +42,5 @@ app.include_router(
     agent_router,
     prefix="/api/v1",
 )
+
+app.include_router(vector_search_router)

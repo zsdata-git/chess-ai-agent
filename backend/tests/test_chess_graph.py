@@ -126,3 +126,46 @@ def test_agent_lichess_error(monkeypatch):
 
     with pytest.raises(RuntimeError):
         run_chess_agent(STARTING_FEN)
+
+
+from unittest.mock import patch
+
+from backend.app.agents.chess_graph import search_wikichess_context
+
+
+def test_wikichess_question_priority():
+    state = {
+        "question": "Qu'est-ce que la défense sicilienne ?",
+        "opening_name": "King's Pawn Game",
+    }
+
+    with patch(
+        "backend.app.agents.chess_graph.search_wikichess",
+        return_value=[],
+    ) as mock_search:
+
+        search_wikichess_context(state)
+
+        mock_search.assert_called_once_with(
+            question="Qu'est-ce que la défense sicilienne ?",
+            top_k=3,
+        )
+
+
+def test_wikichess_automatic_opening():
+    state = {
+        "question": None,
+        "opening_name": "King's Pawn Game",
+    }
+
+    with patch(
+        "backend.app.agents.chess_graph.search_wikichess",
+        return_value=[],
+    ) as mock_search:
+
+        search_wikichess_context(state)
+
+        mock_search.assert_called_once_with(
+            question="What is the King's Pawn Game chess opening?",
+            top_k=3,
+        )

@@ -14,6 +14,7 @@ router = APIRouter(
 
 class AgentRequest(BaseModel):
     fen: str
+    question: str | None = None
 
 
 @router.post("/analyze")
@@ -23,10 +24,14 @@ def analyze_chess_position(request: AgentRequest):
 
     - Recherche les coups théoriques sur Lichess.
     - Utilise Stockfish si aucun coup n'est trouvé.
+    - Enrichit le résultat avec Wikichess si une question est fournie.
     """
 
     try:
-        return run_chess_agent(request.fen)
+        return run_chess_agent(
+            fen=request.fen,
+            question=request.question,
+        )
 
     except FenValidationError as exc:
         raise HTTPException(
