@@ -20,19 +20,20 @@ L'application vise à :
 
 ## Technologies
 
-| Technologie    | Rôle                           |
-| -------------- | ------------------------------ |
-| Python         | Développement backend          |
-| FastAPI        | API REST                       |
-| LangGraph      | Orchestration de l'agent       |
-| python-chess   | Validation des positions FEN   |
-| Lichess API    | Recherche de coups théoriques  |
-| Stockfish      | Évaluation des positions       |
-| pytest         | Tests automatisés              |
-| Milvus         | Recherche vectorielle (prévue) |
-| MongoDB        | Stockage applicatif (prévu)    |
-| Angular        | Interface utilisateur (prévue) |
-| Docker Compose | Conteneurisation               |
+| Technologie           | Rôle                                                    |
+| ----------------------| ------------------------------------------------------- |
+| Python                | Développement backend                                   |
+| FastAPI               | API REST                                                |
+| LangGraph             | Orchestration de l'agent                                |
+| python-chess          | Validation des positions FEN                            |
+| Lichess API           | Recherche de coups théoriques                           |
+| Stockfish             | Évaluation des positions                                |
+| pytest                | Tests automatisés                                       |
+| Milvus                | Base de données vectorielle pour les articles Wikichess |
+| sentence-transformers | Génération des embeddings multilingues                  |
+| MongoDB               | Stockage applicatif (prévu)                             |
+| Angular               | Interface utilisateur (prévue)                          |
+| Docker Compose        | Conteneurisation                                        |
 
 ## État d'avancement
 
@@ -63,13 +64,80 @@ L'application vise à :
 
 Le routage automatique vers Stockfish a été vérifié avec des services simulés.
 
+### Étape 3 — Intégration du RAG avec Milvus ✅
+
+**Objectif :** enrichir l'agent LangGraph avec des connaissances
+textuelles sur les ouvertures d'échecs issues de Wikichess.
+
+#### Collecte et préparation des données
+
+- Collecte des articles Wikichess.
+- Nettoyage et prétraitement des contenus textuels.
+- Préparation des données pour la recherche vectorielle.
+
+#### Embeddings et indexation
+
+- Génération d'embeddings avec sentence-transformers.
+- Comparaison de deux modèles :
+  - MiniLM anglais.
+  - MiniLM multilingue.
+- Évaluation avec Recall@3 et MRR@3.
+- Sélection du modèle multilingue.
+- Indexation des embeddings dans Milvus.
+
+#### Recherche vectorielle
+
+Création de l'endpoint :
+
+`GET /vector-search`
+
+Cet endpoint permet de rechercher les articles Wikichess
+les plus pertinents pour une question donnée.
+
+Les résultats comprennent notamment :
+
+- L'identifiant de l'article.
+- Le contenu textuel.
+- L'URL de la source.
+- Le score de similarité.
+
+#### Intégration dans LangGraph
+
+Le graphe LangGraph a été enrichi avec une recherche Wikichess.
+
+Deux comportements sont pris en charge :
+
+1. Avec une question :
+   recherche des informations correspondant à la question.
+
+2. Sans question :
+   recherche automatique à partir de l'ouverture identifiée.
+
+Les résultats Wikichess sont ajoutés aux informations
+retournées par l'agent.
+
+Le fonctionnement existant de Lichess et Stockfish est conservé.
+
+#### Validation
+
+- Tests de recherche en français et en anglais.
+- Tests de l'endpoint FastAPI.
+- Tests de l'intégration LangGraph.
+- Vérification du fonctionnement avec et sans question.
+- 35 tests automatisés réussis sur l'ensemble du backend.
+
+**Résultat :** l'agent dispose désormais d'un enrichissement
+documentaire fondé sur une recherche vectorielle dans Milvus.
+
 ### Prochaines étapes
 
-* [ ] Étape 3 — Intégration du RAG avec Milvus.
-* [ ] Étape 4 — Intégration de l'API YouTube.
-* [ ] Étape 5 — Développement de l'interface Angular.
-* [ ] Étape 6 — Packaging de l'application.
-* [ ] Étape 7 — Étude de faisabilité du système d'analyse vidéo.
+- [x] Étape 1 — Environnement de développement.
+- [x] Étape 2 — Développement de l'agent LangGraph.
+- [x] Étape 3 — Intégration du RAG avec Milvus.
+- [ ] Étape 4 — Intégration de l'API YouTube.
+- [ ] Étape 5 — Développement de l'interface Angular.
+- [ ] Étape 6 — Packaging de l'application.
+- [ ] Étape 7 — Étude de faisabilité du système d'analyse vidéo.
 
 ## Installation et exécution
 
@@ -118,15 +186,17 @@ Exécuter les tests automatisés :
 uv run python -m pytest backend/tests -v
 ```
 
-**Dernier résultat vérifié : 30 tests réussis.**
+**Dernier résultat vérifié : 35 tests réussis.**
 
 Les tests couvrent notamment :
 
-* La validation des positions FEN.
-* Les services Lichess et Stockfish.
-* Les endpoints FastAPI.
-* Le routage de l'agent LangGraph.
-* Les cas d'erreur.
+- La validation des positions FEN.
+- Les services Lichess et Stockfish.
+- Les endpoints FastAPI.
+- Le routage de l'agent LangGraph.
+- La recherche vectorielle Wikichess.
+- L'enrichissement automatique avec ou sans question.
+- Les cas d'erreur.
 
 ## Structure du projet
 
@@ -157,6 +227,10 @@ chess-ai-agent/
 
 ## Statut
 
-✅ Étapes 1 et 2 terminées.
+✅ Étape 1 — Environnement de développement.
 
-🚧 Étape 3 — Intégration du RAG avec Milvus : à venir.
+✅ Étape 2 — Agent LangGraph.
+
+✅ Étape 3 — Recherche vectorielle et enrichissement Wikichess.
+
+🚧 Étape 4 — Intégration de l'API YouTube.
