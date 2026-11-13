@@ -25,3 +25,12 @@ dist/
 
 # Stockfish executable
 engines/stockfish/*.exe
+# Donnees locales
+/data/
+/volumes/
+
+# Fichiers locaux Milvus
+/embeddedEtcd.yaml
+/milvus-official.yml
+/user.yaml
+/standalone.bat

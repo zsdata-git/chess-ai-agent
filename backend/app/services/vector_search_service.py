@@ -10,8 +10,13 @@ from functools import lru_cache
 from pymilvus import MilvusClient
 from sentence_transformers import SentenceTransformer
 
+import os
 
-MILVUS_URI = "http://localhost:19530"
+
+MILVUS_HOST = os.getenv("MILVUS_HOST", "localhost")
+MILVUS_PORT = os.getenv("MILVUS_PORT", "19530")
+
+MILVUS_URI = f"http://{MILVUS_HOST}:{MILVUS_PORT}"
 
 COLLECTION_NAME = "wikichess_openings_multilingual"
 

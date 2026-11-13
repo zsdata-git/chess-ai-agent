@@ -2,6 +2,14 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+# Installer Stockfish
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends stockfish && \
+    rm -rf /var/lib/apt/lists/*
+
+# Configurer le chemin Stockfish
+ENV STOCKFISH_PATH=/usr/games/stockfish
+
 # Installer uv
 COPY --from=ghcr.io/astral-sh/uv:0.9.5 /uv /uvx /bin/
 
