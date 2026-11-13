@@ -30,7 +30,7 @@ engines/stockfish/*.exe
 /volumes/
 
 # Fichiers locaux Milvus
-/embeddedEtcd.yaml
+/embedEtcd.yaml
 /milvus-official.yml
 /user.yaml
 /standalone.bat
