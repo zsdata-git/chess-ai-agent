@@ -9,6 +9,8 @@ from backend.app.api.agent import router as agent_router
 
 from backend.app.api.vector_search import router as vector_search_router
 
+from backend.app.api.youtube import router as youtube_router
+
 app = FastAPI(
     title="Chess AI Agent",
     description="Agent IA conversationnel pour l'apprentissage des ouvertures aux échecs.",
@@ -44,3 +46,8 @@ app.include_router(
 )
 
 app.include_router(vector_search_router)
+
+app.include_router(
+    youtube_router,
+    prefix="/api/v1",
+)

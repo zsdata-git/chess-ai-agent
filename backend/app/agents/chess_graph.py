@@ -7,6 +7,11 @@ from backend.app.services.lichess_service import get_opening_moves
 from backend.app.services.stockfish_service import analyze_position
 from backend.app.services.vector_search_service import search_wikichess
 
+from backend.app.services.youtube_service import (
+    search_youtube_videos,
+    YouTubeServiceError,
+)
+
 
 # 1. État partagé du graphe
 class ChessState(TypedDict, total=False):
@@ -19,6 +24,9 @@ class ChessState(TypedDict, total=False):
     wikichess_context: list
     result: dict
     opening_name: str | None
+    youtube_videos: list
+    youtube_error: str | None
+    opening: dict | None
 
 
 # 2. Validation FEN
@@ -35,7 +43,8 @@ def search_lichess(state: ChessState) -> dict:
     data = get_opening_moves(state["fen"])
 
     return {
-        "moves": data.get("moves", [])
+        "moves": data.get("moves", []),
+        "opening": data.get("opening"),
     }
 
 
@@ -88,22 +97,17 @@ def stockfish_analysis(state: ChessState) -> dict:
 
 def identify_opening(state: ChessState) -> dict:
     """
-    Identifier une ouverture à partir des résultats Lichess.
+    Identifie l'ouverture correspondant à la position FEN
+    à partir des métadonnées de Lichess.
 
-    Attention : le nom provient des métadonnées d'un coup
-    proposé par Lichess, et non nécessairement de la
-    position FEN elle-même.
+    Ne déduit pas l'ouverture à partir d'un coup futur.
     """
 
-    for move in state.get("moves", []):
-        opening = move.get("opening") or {}
+    opening = state.get("opening") or {}
 
-        name = opening.get("name")
+    name = opening.get("name")
 
-        if name:
-            return {"opening_name": name}
-
-    return {"opening_name": None}
+    return {"opening_name": name}
 
 
 def search_wikichess_context(state: ChessState) -> dict:
@@ -135,16 +139,55 @@ def search_wikichess_context(state: ChessState) -> dict:
 
     return {"wikichess_context": passages}
 
+# Recherche de vidéos pédagogiques YouTube
+def search_youtube_context(
+    state: ChessState,
+) -> dict:
+
+    opening_name = state.get("opening_name")
+
+    if not opening_name:
+        return {
+            "youtube_videos": [],
+            "youtube_error": None,
+        }
+
+    try:
+        videos = search_youtube_videos(
+            opening=opening_name,
+            max_results=3,
+        )
+
+        return {
+            "youtube_videos": videos,
+            "youtube_error": None,
+        }
+
+    except YouTubeServiceError as exc:
+        return {
+            "youtube_videos": [],
+            "youtube_error": str(exc),
+        }
 
 # 8. Construction du résultat enrichi
 def enrich_result(state: ChessState) -> dict:
 
     result = state["result"].copy()
 
-    result["opening_name"] = state.get("opening_name")
+    result["opening_name"] = state.get(
+        "opening_name"
+    )
 
     result["wikichess_context"] = state.get(
         "wikichess_context", []
+    )
+
+    result["youtube_videos"] = state.get(
+        "youtube_videos", []
+    )
+
+    result["youtube_error"] = state.get(
+        "youtube_error"
     )
 
     return {"result": result}
@@ -160,6 +203,7 @@ builder.add_node("stockfish_analysis", stockfish_analysis)
 builder.add_node("search_wikichess", search_wikichess_context)
 builder.add_node("enrich_result", enrich_result)
 builder.add_node("identify_opening", identify_opening)
+builder.add_node("search_youtube", search_youtube_context)
 
 builder.add_edge(START, "validate_fen")
 builder.add_edge("validate_fen", "search_lichess")
@@ -178,7 +222,15 @@ builder.add_edge("stockfish_analysis", "identify_opening")
 
 builder.add_edge("identify_opening", "search_wikichess")
 
-builder.add_edge("search_wikichess", "enrich_result")
+builder.add_edge(
+    "search_wikichess",
+    "search_youtube",
+)
+
+builder.add_edge(
+    "search_youtube",
+    "enrich_result",
+)
 builder.add_edge("enrich_result", END)
 
 chess_graph = builder.compile()

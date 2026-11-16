@@ -20,11 +20,16 @@ class AgentRequest(BaseModel):
 @router.post("/analyze")
 def analyze_chess_position(request: AgentRequest):
     """
-    Analyse une position FEN avec LangGraph.
+    Analyse une position d'échecs avec LangGraph.
 
-    - Recherche les coups théoriques sur Lichess.
-    - Utilise Stockfish si aucun coup n'est trouvé.
-    - Enrichit le résultat avec Wikichess si une question est fournie.
+        Étapes :
+        1. Validation de la position FEN.
+        2. Recherche des coups théoriques avec Lichess.
+        3. Analyse Stockfish si aucun coup n'est disponible.
+        4. Identification d'une ouverture candidate.
+        5. Recherche de connaissances dans Milvus (RAG).
+        6. Recherche de vidéos pédagogiques sur YouTube.
+        7. Construction de la réponse enrichie.
     """
 
     try:
