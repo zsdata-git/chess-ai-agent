@@ -1,0 +1,279 @@
+﻿<div class="container">
+  <header>
+    <h1>♟ Chess AI Agent</h1>
+    <p>Interface interactive de notre agent d'échecs</p>
+  </header>
+
+  <main>
+    <section class="board-section">
+      <div #board class="chess-board"></div>
+    </section>
+
+    <section class="info-section">
+      <h2>Partie en cours</h2>
+
+      <p class="status">{{ status }}</p>
+
+      <h3>Position FEN</h3>
+      <p class="fen">{{ fen }}</p>
+
+      <button (click)="resetGame()">
+        Nouvelle partie
+      </button>
+    </section>
+  </main>
+</div>
+
+<section class="analysis-dashboard">
+
+  <div class="analysis-heading">
+    <h2>♙ Conseils pour votre prochain coup</h2>
+
+    <p>
+      Après chaque réponse de l'agent, découvrez les coups
+      possibles pour les Blancs et les ressources pédagogiques
+      associées à votre position.
+    </p>
+  </div>
+
+  
+  @if (playerAnalysisLoading) {
+
+    <div class="analysis-empty">
+      <p>♙ Analyse de votre position en cours...</p>
+    </div>
+
+  } @else if (playerAnalysis; as analysis) {
+    <div class="analysis-grid">
+
+      <!-- RECOMMANDATIONS -->
+
+      <article class="analysis-card">
+
+        <h3>♟️ Recommandations</h3>
+
+        <p>
+          <strong>Source :</strong>
+          {{ analysis.source === 'lichess' ? 'Lichess' : 'Stockfish' }}
+        </p>
+
+        @if (analysis.opening_name) {
+          <p>
+            <strong>Ouverture :</strong>
+            {{ analysis.opening_name }}
+          </p>
+        }
+
+        @if (analysis.source === 'lichess') {
+
+          <p class="muted">
+            Coups les plus joués dans la base Lichess.
+          </p>
+
+          @if (analysis.moves?.length) {
+
+            <div class="recommendation-list">
+
+              @for (move of analysis.moves!.slice(0, 5); track move.uci) {
+
+                <div class="recommendation-item">
+
+                  <span class="move-name">
+                    {{ move.san || move.uci }}
+                  </span>
+
+                   <span class="move-explanation">
+                    ♟️ {{ describeMove(move.uci) }}
+                  </span>
+
+                  <span class="move-detail">
+                    {{ (move.white + move.draws + move.black).toLocaleString('fr-FR') }}
+                    parties
+                  </span>
+
+                </div>
+
+              }
+
+            </div>
+
+          } @else {
+
+            <p>Aucun coup théorique disponible.</p>
+
+          }
+
+        }
+
+        @if (analysis.source === 'stockfish') {
+
+          <p>
+            <strong>Meilleur coup :</strong>
+            {{ analysis.best_move || 'Non disponible' }}
+          </p>
+
+          @if (analysis.best_move) {
+            <p class="move-explanation">
+              ♟️ {{ describeMove(analysis.best_move) }}
+            </p>
+          }
+
+          @if (analysis.evaluation_cp !== null &&
+               analysis.evaluation_cp !== undefined) {
+
+            <p>
+              <strong>Évaluation :</strong>
+              {{ analysis.evaluation_cp / 100 }}
+              pion(s)
+            </p>
+
+            <p class="muted">
+              Évaluation numérique renvoyée par Stockfish.
+            </p>
+
+          }
+
+        }
+
+      </article>
+
+
+      <!-- WIKICHESS -->
+
+      <article class="analysis-card">
+
+        <h3>📚 Connaissances Wikichess</h3>
+
+        <p class="muted">
+          Passages retrouvés par la recherche vectorielle.
+        </p>
+
+        @if (analysis.wikichess_context?.length) {
+
+          @for (
+            passage of analysis.wikichess_context!;
+            track passage.article_id
+          ) {
+
+            <div class="knowledge-item">
+
+              <p>{{ passage.text }}</p>
+
+              <div class="knowledge-footer">
+
+                <span>
+                  Similarité :
+                  {{ (passage.score * 100).toFixed(1) }} %
+                </span>
+
+                <a
+                  [href]="passage.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Consulter la source ↗
+                </a>
+
+              </div>
+
+            </div>
+
+          }
+
+        } @else {
+
+          <p>
+            Aucun passage Wikichess disponible pour cette analyse.
+          </p>
+
+        }
+
+      </article>
+
+
+      <!-- YOUTUBE -->
+
+      <article class="analysis-card youtube-card">
+
+        <h3>🎬 Vidéos pédagogiques</h3>
+
+        <p class="muted">
+          Ressources proposées par la recherche YouTube.
+        </p>
+
+        @if (analysis.youtube_videos?.length) {
+
+          <div class="video-grid">
+
+            @for (
+              video of analysis.youtube_videos!;
+              track video.video_id
+            ) {
+
+              <a
+                class="video-item"
+                [href]="video.url"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+
+                @if (video.thumbnail) {
+
+                  <img
+                    [src]="video.thumbnail"
+                    [alt]="decodeHtml(video.title)"
+                    loading="lazy"
+                  />
+
+                }
+
+                <div class="video-info">
+
+                  <strong>{{ decodeHtml(video.title) }}</strong>
+
+                  <span>{{ decodeHtml(video.channel) }}</span>
+
+                  <span class="video-link">
+                    Voir la vidéo ↗
+                  </span>
+
+                </div>
+
+              </a>
+
+            }
+
+          </div>
+
+        } @else if (analysis.youtube_error) {
+
+          <p class="muted">
+            Recherche YouTube indisponible.
+          </p>
+
+        } @else {
+
+          <p>
+            Aucune vidéo disponible pour cette position.
+          </p>
+
+        }
+
+      </article>
+
+    </div>
+
+  } @else {
+
+    <div class="analysis-empty">
+
+      <p>
+        ♙ Jouez votre premier coup et attendez la réponse
+        de l'agent pour découvrir vos recommandations.
+      </p>
+
+    </div>
+
+  }
+
+</section>

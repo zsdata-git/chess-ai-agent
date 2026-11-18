@@ -1,0 +1,306 @@
+﻿:host {
+  display: block;
+  min-height: 100vh;
+  background: #f4f6fa;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 30px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+h1 {
+  color: #253858;
+}
+
+main {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.board-section {
+  width: 480px;
+  max-width: 100%;
+}
+
+.chess-board {
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.info-section {
+  width: 350px;
+  padding: 25px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.status {
+  font-weight: bold;
+  color: #2563eb;
+}
+
+.fen {
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  background: #f1f5f9;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #253858;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #374f77;
+}
+
+
+/* ========================================
+   ANALYSE ET RECOMMANDATIONS
+======================================== */
+
+.analysis-dashboard {
+  max-width: 1100px;
+  margin: 45px auto 0;
+  padding: 0 30px 40px;
+  font-family: Arial, sans-serif;
+}
+
+.analysis-heading {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.analysis-heading h2 {
+  color: #253858;
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+
+.analysis-heading p {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 25px;
+}
+
+.analysis-card {
+  min-width: 0;
+  padding: 25px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.analysis-card h3 {
+  color: #253858;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.muted {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+
+/* RECOMMANDATIONS */
+
+.recommendation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.recommendation-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  background: #f1f5f9;
+  border-radius: 8px;
+}
+
+.move-name {
+  font-weight: bold;
+  color: #2563eb;
+}
+
+.move-detail {
+  color: #64748b;
+  font-size: 12px;
+  text-align: right;
+}
+
+
+/* WIKICHESS */
+
+.knowledge-item {
+  padding: 15px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.knowledge-item:last-child {
+  border-bottom: none;
+}
+
+.knowledge-item p {
+  color: #334155;
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.knowledge-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.knowledge-footer span {
+  color: #64748b;
+}
+
+.knowledge-footer a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.knowledge-footer a:hover {
+  text-decoration: underline;
+}
+
+
+/* YOUTUBE */
+
+.youtube-card {
+  grid-column: 1 / -1;
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.video-item {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  text-decoration: none;
+  background: #f8fafc;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.video-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.video-item img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.video-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 15px;
+}
+
+.video-info strong {
+  color: #253858;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.video-info span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.video-info .video-link {
+  color: #2563eb;
+  font-weight: bold;
+}
+
+
+/* ÉTAT INITIAL */
+
+.analysis-empty {
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  text-align: center;
+  color: #64748b;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+
+  .analysis-dashboard {
+    padding: 0 15px 30px;
+  }
+
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .youtube-card {
+    grid-column: auto;
+  }
+
+  .video-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+/* Explications pédagogiques des coups recommandés */
+.move-explanation {
+  display: block;
+  font-size: 13px;
+  color: #526581;
+  line-height: 1.5;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}

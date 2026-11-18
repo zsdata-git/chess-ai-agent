@@ -34,7 +34,9 @@ L'application vise à :
 | Milvus                | Base de données vectorielle pour les articles Wikichess |
 | sentence-transformers | Génération des embeddings multilingues                  |
 | MongoDB               | Stockage applicatif (prévu)                             |
-| Angular               | Interface utilisateur (prévue)                          |
+| Angular               | Interface utilisateur interactive                       |
+| Chessground           | Affichage et interaction avec l'échiquier               |
+| chess.js              | Gestion des règles et validation des coups              |
 | Docker Compose        | Conteneurisation                                        |
 
 ## État d'avancement
@@ -169,13 +171,88 @@ documentaire fondé sur une recherche vectorielle dans Milvus.
 
 **Résultat :** l’endpoint demandé et la recommandation automatique de vidéos dans LangGraph sont opérationnels dans les scénarios vérifiés.
 
+### Étape 5 — Développement de l'interface Angular ✅
+
+**Objectif :** développer une interface utilisateur interactive permettant de jouer aux échecs contre l'agent IA et de consulter les recommandations et ressources pédagogiques associées aux positions analysées.
+
+#### Développement de l'interface
+
+- Création d'une application frontend avec Angular 22.
+- Intégration d'un échiquier interactif avec Chessground.
+- Utilisation de chess.js pour gérer les règles et valider les déplacements.
+- Affichage et actualisation de la position au format FEN.
+- Gestion des déplacements des pièces et des tours de jeu.
+- Intégration d'un bouton permettant de démarrer une nouvelle partie.
+- Affichage de l'état de la partie : coup joué, échec, échec et mat ou partie nulle.
+
+#### Communication avec le backend FastAPI
+
+- Configuration de la communication entre Angular et FastAPI.
+- Utilisation d'Angular HttpClient pour effectuer les requêtes HTTP.
+- Transmission des positions FEN à l'agent IA via l'endpoint `POST /api/v1/agent/analyze`.
+- Récupération et affichage des réponses de l'agent.
+- Application des coups retournés par l'agent lorsqu'ils sont légaux.
+- Vérification de la légalité des coups avant leur application.
+- Gestion des réponses contenant un coup illégal afin de préserver la cohérence de l'échiquier.
+
+#### Affichage des recommandations
+
+L'interface présente les informations retournées par l'agent selon la source sélectionnée.
+
+**Lichess :**
+- Affichage de l'ouverture identifiée lorsqu'elle est disponible.
+- Présentation des coups théoriques proposés.
+- Affichage du nombre de parties associées aux coups.
+- Ajout d'explications en français indiquant les pièces à déplacer et leurs cases de départ et d'arrivée.
+
+**Stockfish :**
+- Affichage du meilleur coup retourné par le moteur.
+- Présentation de son évaluation numérique.
+- Ajout d'une explication du déplacement proposé.
+
+Les recommandations sont adaptées aux informations disponibles pour la position analysée.
+
+#### Intégration des ressources pédagogiques
+
+**Wikichess :**
+- Affichage des passages retrouvés par la recherche vectorielle dans Milvus.
+- Présentation des scores de similarité.
+- Ajout de liens permettant de consulter les sources originales.
+- Conservation des contenus Wikichess en anglais.
+
+**YouTube :**
+- Affichage des vidéos pédagogiques retournées par l'agent.
+- Présentation des miniatures, titres et chaînes.
+- Ajout de liens permettant d'ouvrir les vidéos sur YouTube.
+
+#### Vérifications réalisées
+
+- Compilation réussie de l'application Angular.
+- Vérification de l'affichage de l'échiquier et des pièces.
+- Tests manuels des déplacements et de la synchronisation FEN.
+- Vérification du fonctionnement du bouton « Nouvelle partie ».
+- Tests des échanges entre Angular et FastAPI.
+- Vérification de l'application des coups retournés par l'agent.
+- Tests d'affichage des recommandations Lichess et Stockfish.
+- Vérification de l'affichage des ressources Wikichess et YouTube.
+- Test de plusieurs parties (notamment jusqu'à une position d'échec et mat).
+
+#### Perspectives d'amélioration
+
+- Les appels HTTP sont actuellement gérés dans le composant Angular ; leur extraction dans un service dédié permettrait d'améliorer la séparation des responsabilités.
+- La gestion des erreurs réseau et la reprise après un échec de communication peuvent être renforcées.
+- La pertinence des recommandations dépend des données retournées par les différentes sources.
+- L'interface est actuellement exécutée en environnement local ; son packaging sera traité à l'étape suivante.
+
+**Résultat :** une interface Angular interactive et connectée à l'agent IA est opérationnelle dans les scénarios testés. Elle permet de jouer aux échecs, de consulter les recommandations Lichess et Stockfish et d'accéder aux ressources pédagogiques Wikichess et YouTube.
+
 ### Prochaines étapes
 
 - [x] Étape 1 — Environnement de développement.
 - [x] Étape 2 — Développement de l'agent LangGraph.
 - [x] Étape 3 — Intégration du RAG avec Milvus.
 - [x] Étape 4 — Intégration de l'API YouTube.
-- [ ] Étape 5 — Développement de l'interface Angular.
+- [x] Étape 5 — Développement de l'interface Angular.
 - [ ] Étape 6 — Packaging de l'application.
 - [ ] Étape 7 — Étude de faisabilité du système d'analyse vidéo.
 
@@ -206,6 +283,27 @@ Documentation Swagger :
 
 `http://localhost:8000/docs`
 
+
+### Démarrage du frontend Angular
+
+Depuis la racine du projet :
+
+```powershell
+cd frontend
+npm.cmd ci
+npm.cmd start
+```
+
+L'interface est accessible à l'adresse :    
+  
+`http://localhost:4200/`    
+  
+Le backend FastAPI doit également être démarré pour permettre la communication avec l'agent IA.  
+  
+**Compilation du frontend**  
+Depuis le dossier frontend : `npm.cmd run build`  
+*Cette commande permet de vérifier que l'application Angular compile correctement.*  
+  
 ### Configuration YouTube
 
 Créer un fichier `.env` local à la racine du projet (non versionné) et renseigner notamment :
@@ -271,6 +369,20 @@ chess-ai-agent/
 │   └── Dockerfile
 ├── data/
 ├── docs/
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── app.ts
+│   │   │   ├── app.html
+│   │   │   ├── app.scss
+│   │   │   └── app.config.ts
+│   │   ├── main.ts
+│   │   └── styles.scss
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── proxy.conf.json
+│   └── angular.json
 ├── engines/
 │   └── stockfish/
 ├── .env.example
@@ -290,4 +402,8 @@ chess-ai-agent/
 
 ✅ Étape 4 — Intégration de l'API YouTube.
 
-⏳ Étape 5 — Interface Angular (à développer).
+✅ Étape 5 — Interface Angular interactive et intégration avec l'agent IA.
+
+⏳ Étape 6 — Packaging de l'application avec Docker Compose.
+
+⏳ Étape 7 — Étude de faisabilité du système d'analyse vidéo.
