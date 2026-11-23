@@ -323,7 +323,7 @@ Ces vérifications correspondent aux scénarios exécutés dans l'environnement 
 - [x] Étape 4 — Intégration de l'API YouTube.
 - [x] Étape 5 — Développement de l'interface Angular.
 - [x] Étape 6 — Packaging et intégration avec Docker Compose.
-- [ ] Étape 7 — Étude de faisabilité du système d'analyse vidéo.
+- [x] Étape 7 — Étude de faisabilité du système d'analyse vidéo.
 
 ## Installation et démarrage
 
