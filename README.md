@@ -628,4 +628,4 @@ chess-ai-agent/
 
 ✅ Étape 6 — Packaging et intégration avec Docker Compose.
 
-⏳ Étape 7 — Étude de faisabilité du système d'analyse vidéo.
+✅ Étape 7 — Étude de faisabilité du système d'analyse vidéo.
